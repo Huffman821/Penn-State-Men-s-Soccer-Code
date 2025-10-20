@@ -1,0 +1,161 @@
+# ------------------------------------------------------------------------------
+# Load necessary libraries
+# ------------------------------------------------------------------------------
+library(dplyr)
+library(tidyverse)
+library(readr)
+
+# ------------------------------------------------------------------------------
+# Load data
+# ------------------------------------------------------------------------------
+data <- read_csv("~/Downloads/player_totals.csv")
+
+data$position <- as.character(data$position)
+
+# Add specific positions
+data$sPosition <- c(
+  "CB", "AM", "WM", "FB", "WM", "AM", "WM", "CM", "CM", "AM",
+  "CB", "ST", "CM", "FB", "FB", "FB", "CB", "FB", "FB", "ST"
+)
+
+# ------------------------------------------------------------------------------
+# Create per90 rates (avoid division by zero)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(minutes_played = ifelse(minutes_played == 0 | is.na(minutes_played), 1, minutes_played),
+         per90_factor = 90 / minutes_played) %>%
+  mutate(
+    goals_p90 = goals * per90_factor,
+    xg_p90 = xg * per90_factor,
+    assists_p90 = assists * per90_factor,
+    xa_p90 = xa * per90_factor,
+    key_passes_p90 = key_passes * per90_factor,
+    shots_on_target_p90 = shots_on_target * per90_factor,
+    shots_total_p90 = shots_total * per90_factor,
+    defensive_duels_won_p90 = defensive_duels_won * per90_factor,
+    offensive_duels_won_p90 = offensive_duels_won * per90_factor,
+    aerial_duels_won_p90 = aerial_duels_won * per90_factor,
+    interceptions_p90 = interceptions * per90_factor,
+    clearances_p90 = clearances * per90_factor,
+    recoveries_total_p90 = recoveries_total * per90_factor,
+    recoveries_opponent_half_p90 = recoveries_opponent_half * per90_factor
+  )
+
+# ------------------------------------------------------------------------------
+# Compute component grades (reweighted goals/assists vs xG/xA)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(
+    Offensive_Grade = (
+      goals_p90*0.25 + xg_p90*0.45 + assists_p90*0.1 + xa_p90*0.35 +
+      shots_on_target_p90*0.2 + (shots_total_p90 - shots_on_target_p90)*0.1 +
+      key_passes_p90*0.25 + dribbles_successful*0.1 + touches_in_penalty_area*0.15
+    ) / 5,
+
+    Passing_Grade = (
+      (passes_accurate*0.15) +
+      (crosses_accurate*0.1) +
+      (forward_passes_accurate*0.25) +
+      (back_passes_accurate*0.05) +
+      (lateral_passes_accurate*0.05) +
+      (passes_final_third_accurate*0.35) +
+      (key_passes*0.2) -
+      pmax(losses - losses_own_half, 0)*0.1 - losses_own_half*0.3
+    ) / 5,
+
+    Defensive_Grade = (
+      defensive_duels_won_p90*0.3 + interceptions_p90*0.25 + clearances_p90*0.05 +
+      sliding_tackles_won*0.05 + pmax(recoveries_total_p90 - recoveries_opponent_half_p90, 0)*0.15 +
+      recoveries_opponent_half_p90*0.15 - (losses_own_half*0.05)*0.85
+    ) / 5,
+
+    Duel_Grade = (
+      offensive_duels_won_p90*0.35 + aerial_duels_won_p90*0.25 +
+      defensive_duels_won_p90*0.4
+    ) / 3,
+
+    Discipline_Grade = 1 - (yellow_cards*0.5 + red_cards*1 + fouls_committed*0.1) / 5
+  ) %>%
+  mutate(across(
+    c(Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade),
+    ~ ifelse(is.nan(.x) | is.infinite(.x), 0, .x)
+  ))
+
+# ------------------------------------------------------------------------------
+# Standardize (z-score) all component grades before weighting
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(across(
+    c(Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade),
+    ~ as.numeric(scale(.x))
+  ))
+
+# ------------------------------------------------------------------------------
+# Position-based weights (unchanged)
+# ------------------------------------------------------------------------------
+sposition_weights <- list(
+  CB = c(Offense=0.00, Passing=0.18, Defense=0.65, Duels=0.14, Discipline=0.03), 
+  FB = c(Offense=0.12, Passing=0.23, Defense=0.45, Duels=0.17, Discipline=0.03), 
+  CM = c(Offense=0.25, Passing=0.35, Defense=0.20, Duels=0.17, Discipline=0.03), 
+  WM = c(Offense=0.38, Passing=0.20, Defense=0.18, Duels=0.21, Discipline=0.03), 
+  AM = c(Offense=0.48, Passing=0.28, Defense=0.10, Duels=0.11, Discipline=0.03), 
+  ST = c(Offense=0.65, Passing=0.12, Defense=0.05, Duels=0.15, Discipline=0.03)
+)
+
+
+compute_weighted_rating <- function(pos, offense, passing, defense, duels, discipline) {
+  w <- sposition_weights[[pos]]
+  if (is.null(w)) return(NA_real_)
+  sum(c(offense, passing, defense, duels, discipline) * w)
+}
+
+# ------------------------------------------------------------------------------
+# Compute final ratings (no actions_total weighting)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    Player_Rating_raw = compute_weighted_rating(
+      sPosition, Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade
+    )
+  ) %>%
+  ungroup()
+
+# ------------------------------------------------------------------------------
+# Scale final ratings to ~6.5 ± 1.0
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(
+    Player_Rating_FIFA = pmin(
+      10,
+      pmax(0,
+        6.5 + 1.0 * as.numeric(scale(Player_Rating_raw))
+      )
+    )
+  )
+
+# ------------------------------------------------------------------------------
+# Normalize all individual grades to [0,1] range centered at 0.5
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(across(
+    c(Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade),
+    ~ {
+      z <- as.numeric(scale(.x))  # standardize (mean 0, sd 1)
+      scaled <- 0.5 + 0.5 * (z / max(abs(z), na.rm = TRUE))  # rescale to 0–1 centered at 0.5
+      pmin(pmax(scaled, 0), 1)  # clamp to [0,1]
+    }
+  ))
+
+
+# ------------------------------------------------------------------------------
+# Select final output
+# ------------------------------------------------------------------------------
+datagrades <- data %>%
+  select(
+    player, sPosition, minutes_played, Player_Rating_FIFA,
+    Offensive_Grade, Defensive_Grade, Passing_Grade, Duel_Grade, Discipline_Grade
+  )
+
+# View result
+datagrades
