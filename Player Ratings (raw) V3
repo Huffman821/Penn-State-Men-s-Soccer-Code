@@ -1,0 +1,210 @@
+# ------------------------------------------------------------------------------
+# Load necessary packages
+# ------------------------------------------------------------------------------
+library(dplyr)
+library(tidyverse)
+library(readr)
+
+# ------------------------------------------------------------------------------
+# Load data
+# ------------------------------------------------------------------------------
+data <- read_csv("~/Downloads/player_totals.csv")
+
+# Ensure Position is character
+data$position <- as.character(data$position)
+
+# Manually include Positions (sPositions)
+data$sPosition <- c(
+  "CB", "AM", "WM", "FB", "WM", "AM", "WM", "CM", "CM", "AM",
+  "CB", "ST", "CM", "FB", "FB", "FB", "CB", "FB", "FB", "ST"
+)
+
+# ------------------------------------------------------------------------------
+# Exclude players with < 1 minute (not a necessary step but helpful if applicable)
+# ------------------------------------------------------------------------------
+data <- data %>% filter(!is.na(minutes_played) & minutes_played >= 1)
+
+# ------------------------------------------------------------------------------
+# Replace zero denominators for certain raw-count columns (prevent NaN when using totals)
+# (Keep names consistent with CSV. Adjust names below if CSV uses different names.)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(
+    shots_total = ifelse(is.na(shots_total) | shots_total == 0, 1, shots_total),
+    passes_total = ifelse(is.na(passes_total) | passes_total == 0, 1, passes_total),
+    crosses_total = ifelse(is.na(crosses_total) | crosses_total == 0, 1, crosses_total),
+    offensive_duels_total = ifelse(is.na(offensive_duels_total) | offensive_duels_total == 0, 1, offensive_duels_total),
+    defensive_duels_total = ifelse(is.na(defensive_duels_total) | defensive_duels_total == 0, 1, defensive_duels_total),
+    aerial_duels_total = ifelse(is.na(aerial_duels_total) | aerial_duels_total == 0, 1, aerial_duels_total),
+    loose_ball_duels_total = ifelse(is.na(loose_ball_duels_total) | loose_ball_duels_total == 0, 1, loose_ball_duels_total),
+    actions_total = ifelse(is.na(actions_total) | actions_total == 0, 1, actions_total)
+  )
+
+# ------------------------------------------------------------------------------
+# Compute component grades (expanded to include the full set of variables)
+# We follow your past structure and proportions but integrate many more features.
+# Weights inside each component are illustrative; you can adjust them later.
+# ------------------------------------------------------------------------------
+#coalesce(): Given a set of vectors, coalesce() finds the first non-missing value at each position. It's inspired by the SQL COALESCE function which does the same thing for SQL NULLs.
+
+data <- data %>%
+  mutate(
+    # Offensive: positive contributors (per90) minus offsides penalty (per90)
+    Offensive_Grade = (
+      # scoring & shot quality
+      (coalesce(goals, 0) * 0.65) +
+      (coalesce(xg, 0) * 0.45) +
+      (coalesce(assists, 0) * 0.45) +
+      (coalesce(xa, 0) * 0.30) +
+        
+      # shooting volume & accuracy
+      (coalesce(shots_on_target, 0) * 0.25) +
+      ((coalesce(shots_total, 0) - coalesce(shots_on_target, 0)) * 0.10) -
+      (coalesce(shots_blocked, 0) * 0.05) +
+        
+      # creativity & chance creation
+      (coalesce(key_passes, 0) * 0.35) +
+      (coalesce(shot_assists, 0) * 0.25) +
+      (coalesce(second_third_assists, 0) * 0.20) +
+      (coalesce(deep_completions, 0) * 0.20) +
+        
+      # dribbles & penalty area presence
+      (coalesce(dribbles_successful, 0) * 0.12) +
+      (coalesce(touches_in_penalty_area, 0) * 0.22) +
+        
+      # fouls suffered and set-piece earning rewarded
+      (coalesce(fouls_suffered, 0) * 0.10) +
+      (coalesce(free_kicks, 0) * 0.06) +
+      (coalesce(direct_free_kicks, 0) * 0.06) +
+      (coalesce(corners_served, 0) * 0.05) -
+      # offsides penalized
+      (coalesce(offsides, 0) * 0.25)
+    ) / 7.5,  # divisor chosen to scale down into comparable range
+
+    # Passing: incorporates both volume and quality (accurate counts and acc rates)
+    Passing_Grade = (
+      (coalesce(passes_accurate, 0) * 0.20) +
+      (coalesce(forward_passes_accurate, 0) * 0.18) +
+      (coalesce(passes_final_third_accurate, 0) * 0.25) +
+      (coalesce(key_passes, 0) * 0.35) +
+      (coalesce(progressive_passes_accurate, 0) * 0.25) +
+      (coalesce(through_passes_accurate, 0) * 0.20) +
+      (coalesce(deep_completions, 0) * 0.15) +
+      (coalesce(crosses_accurate, 0) * 0.08) +
+      (coalesce(average_pass_length, 0) * 0.02) +  # small influence
+      (coalesce(corners_served, 0) * 0.05) +
+      (coalesce(throw_ins, 0) * 0.02)
+    ) / 6.0,
+
+    # Defensive: prevention & recoveries
+    Defensive_Grade = (
+      (coalesce(defensive_duels_won, 0) * 0.28) +
+      (coalesce(interceptions, 0) * 0.22) +
+      (coalesce(clearances, 0) * 0.22) +
+      (coalesce(sliding_tackles_won, 0) * 0.08) +
+      (coalesce(recoveries_total, 0) * 0.12) +
+      (coalesce(recoveries_opponent_half, 0) * 0.10) +
+      (coalesce(shots_blocked, 0) * 0.08) -
+      (coalesce(losses_own_half, 0) * 0.40)
+    ) / 3.0,
+
+    # Duel grade: winning contested situations across types
+    Duel_Grade = (
+      (coalesce(offensive_duels_won, 0) * 0.25) +
+      (coalesce(defensive_duels_won, 0) * 0.25) +
+      (coalesce(aerial_duels_won, 0) * 0.25) +
+      (coalesce(loose_ball_duels_won, 0) * 0.20) +
+      (coalesce(duels_won, 0) * 0.20)
+    ) / 2.1,
+
+    # Discipline: penalize cards, fouls committed, and costly mistakes
+    Discipline_Grade = 1 - (
+      (coalesce(yellow_cards, 0) * 0.5) +
+      (coalesce(red_cards, 0) * 1.0) +
+      (coalesce(fouls_committed, 0) * 0.12) +
+      (coalesce(losses, 0) * 0.12) +
+      (coalesce(losses_own_half, 0) * 0.14)
+    ) / 5
+  ) %>%
+  # Replace NaN or infinite with 0 to avoid propagation of NA
+  mutate(across(
+    c(Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade),
+    ~ ifelse(is.nan(.x) | is.infinite(.x) | is.na(.x), 0, .x)
+  ))
+
+# ------------------------------------------------------------------------------
+# Normalize component grades to 0–1 via min-max scaling (keeps structure from original)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(across(
+    c(Offensive_Grade, Passing_Grade, Defensive_Grade, Duel_Grade, Discipline_Grade),
+    ~ pmin(1, pmax(0, 0.65 + 0.1 * as.numeric(scale(.x))))
+  ))
+
+# ------------------------------------------------------------------------------
+# Position-based weights (unchanged from your original)
+# ------------------------------------------------------------------------------
+sposition_weights <- list(
+  CB = c(Offense=0.05, Passing=0.14, Defense=0.6, Duels=0.18, Discipline=0.03),
+  FB = c(Offense=0.12, Passing=0.17, Defense=0.45, Duels=0.23, Discipline=0.03),
+  CM = c(Offense=0.20, Passing=0.35, Defense=0.20, Duels=0.22, Discipline=0.03),
+  WM = c(Offense=0.38, Passing=0.20, Defense=0.18, Duels=0.21, Discipline=0.03),
+  AM = c(Offense=0.48, Passing=0.23, Defense=0.10, Duels=0.16, Discipline=0.03),
+  ST = c(Offense=0.55, Passing=0.19, Defense=0.05, Duels=0.18, Discipline=0.03)
+)
+
+compute_weighted_rating <- function(pos, offense, passing, defense, duels, discipline) {
+  w <- sposition_weights[[pos]]
+  if (is.null(w)) return(NA_real_)
+  sum(c(offense, passing, defense, duels, discipline) * w)
+}
+
+# ------------------------------------------------------------------------------
+# Compute weighted and adjusted ratings
+# - Use actions_total as activity scaler (per your earlier pipeline)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    Player_Rating_raw = compute_weighted_rating(
+      sPosition,
+      Offensive_Grade,
+      Passing_Grade,
+      Defensive_Grade,
+      Duel_Grade,
+      Discipline_Grade
+    ),
+    Player_Rating_adj = Player_Rating_raw * (coalesce(actions_total, 1) / mean(coalesce(actions_total, NA), na.rm = TRUE))
+  ) %>%
+  ungroup()
+
+# ------------------------------------------------------------------------------
+# Rescale final ratings to hover around 6.5 ± 1.0 (clipped 0-10)
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(
+    Player_Rating_FIFA = pmin(
+      10,
+      pmax(
+        0,
+        6.5 + 1.0 * as.numeric(scale(Player_Rating_adj))  # mean ≈ 6.5, sd ≈ 1.0
+      )
+    )
+  )
+
+# ------------------------------------------------------------------------------
+# Select final output (same structure as your original)
+# ------------------------------------------------------------------------------
+datagrades <- data %>%
+  select(
+    player, sPosition, minutes_played, 
+    Player_Rating_FIFA,
+    Offensive_Grade, Defensive_Grade, Passing_Grade, Duel_Grade, Discipline_Grade
+  )
+
+# View the result (prints to console)
+print(datagrades)
+
+# ------------------------------------------------------------------------------
+# End of script
+# ------------------------------------------------------------------------------
