@@ -9,15 +9,109 @@ This code basically creates a match rating (and cumulative rating) for each play
 
 The rating takes into account all the actions a player makes:
 
-Offense: Goals, assists, shots on target, key passes or chances created, dribbles, and touches in the box.
+Offensive Grade Uses:
 
-Defense: Tackles won, interceptions, clearances, and sliding tackles.
+- goals
 
-Passing and possession: How accurate their passes were, including forward, backward, and sideways passes, plus turnovers.
+- xg (expected goals)
 
-Duels and recoveries: Success in one-on-one battles, aerial duels, and loose-ball recoveries.
+- assists
 
-Discipline: Yellow and red cards, plus fouls.
+- xa (expected assists)
+
+- shots_on_target
+
+- shots_total
+
+- shots_blocked
+
+- key_passes
+
+- shot_assists
+
+- second_third_assists
+
+- deep_completions
+
+- dribbles_successful
+
+- touches_in_penalty_area
+
+- fouls_suffered
+
+- free_kicks
+
+- direct_free_kicks
+
+- corners_served
+
+- offsides
+
+Passing Grade Uses:
+
+- passes_accurate
+
+- forward_passes_accurate
+
+- passes_final_third_accurate
+
+- key_passes
+
+- progressive_passes_accurate
+
+- through_passes_accurate
+
+- deep_completions
+
+- crosses_accurate
+
+- average_pass_length
+
+- corners_served
+
+- throw_ins
+
+Defensive Grade Uses:
+
+- defensive_duels_won
+
+- interceptions
+
+- clearances
+
+- sliding_tackles_won
+
+- recoveries_total
+
+- recoveries_opponent_half
+
+- shots_blocked
+
+- losses_own_half (negative impact)
+
+Duel Grade Uses:
+
+- offensive_duels_won
+
+- defensive_duels_won
+
+- aerial_duels_won
+
+- loose_ball_duels_won
+
+- duels_won
+
+Discipline Grade Uses (Penalties):
+
+- yellow_cards
+
+- red_cards
+
+- fouls_committed
+
+- losses
+
+- losses_own_half
 
 2. Making It Fair
 
