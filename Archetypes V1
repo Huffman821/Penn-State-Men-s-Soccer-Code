@@ -1,0 +1,176 @@
+# ------------------------------------------------------------------------------
+# Full Archetype Assignment Using Per90 Stats
+# ------------------------------------------------------------------------------
+
+library(dplyr)
+
+# Safe percentile function
+percentile_safe <- function(x) {
+  if(all(is.na(x))) return(rep(0.5, length(x)))
+  dplyr::percent_rank(x)
+}
+
+data <- data %>% 
+  mutate(crosses_total_per90 = crosses_total / minutes_played * 90)
+
+# Compute percentiles per sPosition using per90 stats
+data <- data %>%
+  group_by(sPosition) %>%
+  mutate(
+    p_goals = percentile_safe(goals_per90),
+    p_xg = percentile_safe(xg_per90),
+    p_shots_on_target = percentile_safe(shots_on_target_per90),
+    p_touches_pen_area = percentile_safe(touches_in_penalty_area_per90),
+    p_dribbles = percentile_safe(dribbles_successful_per90),
+    p_key_passes = percentile_safe(key_passes_per90),
+    p_xa = percentile_safe(xa_per90),
+    p_progressive = percentile_safe(progressive_passes_accurate_per90),
+    p_pass_final3 = percentile_safe(passes_final_third_accurate_per90),
+    p_duels = percentile_safe(duels_won_per90),
+    p_def_duels = percentile_safe(defensive_duels_won_per90),
+    p_recoveries = percentile_safe(recoveries_opponent_half_per90),
+    p_interceptions = percentile_safe(interceptions_per90),
+    p_aerial_duels = percentile_safe(aerial_duels_won_per90),
+    p_clearances = percentile_safe(clearances_per90), 
+    p_crosses_total = percentile_safe(crosses_total_per90), 
+    p_shots_total = percentile_safe(shots_total_per90), 
+    p_recoveries_opp_half = percentile_safe(recoveries_opponent_half_per90)
+  ) %>%
+  ungroup()
+
+# ------------------------------------------------------------------------------
+# Archetype scoring including Complete
+# ------------------------------------------------------------------------------
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    # ------------------- ST -------------------
+    score_poacher = 0.25*p_goals + 0.20*p_xg + 0.15*p_shots_on_target + 0.15*p_touches_pen_area + 0.10*p_dribbles,
+    score_targetman = 0.25*p_aerial_duels + 0.20*p_duels + 0.15*p_goals + 0.10*p_touches_pen_area + 0.10*p_dribbles,
+    score_falsenine = 0.25*p_key_passes + 0.20*p_xa + 0.15*p_progressive + 0.15*p_dribbles + 0.10*p_goals,
+    score_mobile9 = 0.20*p_xg + 0.20*p_goals + 0.20*p_progressive + 0.15*p_dribbles + 0.10*p_shots_on_target,
+    score_pressing9 = 0.25*p_def_duels + 0.20*p_recoveries + 0.20*p_recoveries_opp_half + 0.15*p_interceptions + 0.10*p_goals,
+    score_completeforward = mean(c(score_poacher, score_targetman, score_falsenine, score_mobile9, score_pressing9)),  
+    
+    # ------------------- AM -------------------
+    score_cam = 0.25*p_key_passes + 0.20*p_xa + 0.15*p_pass_final3 + 0.15*p_dribbles + 0.10*p_goals,
+    score_support_striker = 0.25*p_goals + 0.20*p_xg + 0.20*p_touches_pen_area + 0.15*p_key_passes,
+    score_playmaker = 0.25*p_progressive + 0.20*p_pass_final3 + 0.20*p_key_passes + 0.15*p_xa,
+    score_complete_am = mean(c(score_cam, score_support_striker, score_playmaker)),
+    
+    # ------------------- WM  -------------------
+    score_traditionalwm = 0.25*p_crosses_total + 0.20*p_pass_final3 + 0.15*p_dribbles +
+                          0.15*p_key_passes + 0.10*p_def_duels + 0.10*p_duels,
+    score_wingback = 0.25*p_def_duels + 0.20*p_recoveries + 0.20*p_crosses_total +
+                     0.15*p_duels + 0.10*p_dribbles + 0.10*p_key_passes + 0.10*p_recoveries_opp_half,
+    score_playmakingwing = 0.25*p_key_passes + 0.20*p_progressive + 0.20*p_dribbles +
+                          0.15*p_pass_final3 + 0.10*p_crosses_total + 0.10*p_xa,
+    score_invertedwm = 0.25*p_goals + 0.20*p_dribbles + 0.20*p_progressive +
+                       0.15*p_key_passes + 0.10*p_xa + 0.10*p_shots_on_target,
+    score_insideforward = 0.25*p_goals + 0.20*p_xg + 0.20*p_dribbles +
+                          0.15*p_shots_on_target + 0.10*p_key_passes + 0.10*p_xa,
+    score_widetargetman = 0.25*p_aerial_duels + 0.20*p_duels + 0.20*p_touches_pen_area +
+                          0.15*p_recoveries + 0.10*p_shots_total + 0.10*p_goals,
+    score_complete_wm = mean(c(score_traditionalwm, score_wingback, score_playmakingwing, score_invertedwm, 
+                               score_insideforward, score_widetargetman)), 
+    
+    # ------------------- CM -------------------
+    score_cdm = 0.25*p_def_duels + 0.20*p_recoveries + 0.20*p_interceptions + 0.15*p_duels,
+    score_regista = 0.25*p_progressive + 0.20*p_pass_final3 + 0.20*p_key_passes + 0.15*p_xa,
+    score_box2box = 0.25*p_goals + 0.20*p_def_duels + 0.20*p_recoveries + 0.15*p_dribbles,
+    score_complete_cm = mean(c(score_cdm, score_regista, score_box2box)),
+    
+    # ------------------- FB -------------------
+    score_traditionalfb = 0.25*p_def_duels + 0.20*p_recoveries + 0.20*p_aerial_duels + 0.15*p_dribbles,
+    score_invertedfb = 0.25*p_dribbles + 0.20*p_progressive + 0.20*p_pass_final3 + 0.15*p_key_passes,
+    score_complete_fb = mean(c(score_traditionalfb, score_invertedfb)),
+    
+    # ------------------- CB -------------------
+    score_stopper = 0.25*p_def_duels + 0.20*p_recoveries + 0.20*p_aerial_duels + 0.15*p_interceptions + 0.10*p_clearances,
+    score_ballplayingcb = 0.25*p_pass_final3 + 0.20*p_progressive + 0.20*p_key_passes + 0.15*p_def_duels + 0.10*p_aerial_duels,
+    score_sweeper = 0.25*p_interceptions + 0.20*p_recoveries + 0.20*p_def_duels + 0.15*p_aerial_duels + 0.10*p_pass_final3 + 0.10*p_progressive,
+    score_complete_cb = mean(c(score_stopper, score_ballplayingcb, score_sweeper))
+  ) %>%
+  ungroup()
+
+#The way this code above works is it takes the individual per90 stats and weights them based on importance per archetype
+#Once it inputs all the stats into the score_(blank) grade, the formula will then take the highest of the n different types
+#Which ever is the highest score within that position (CB, FB, CM, ...) is what title the player will be assigned
+#Just because a player is assigned one title doesn't mean that they don't deserve to have another (they're grade will help to reflect that)
+#The code below is what determines the grade,this code: names(scores)[which.max(scores)] finds the max score of the n types
+
+  # ------------------- Assign Archetype -------------------
+library(dplyr)
+
+data <- data %>%
+  rowwise() %>%
+  mutate(                              #Think of the next # as a sentence and go down the lines 
+    Archetype = case_when( #when
+      sPosition == "ST" ~ { #a player is a striker, they have the options of grade: 
+        scores <- c(
+          Poacher = score_poacher, #1
+          Target_Man = score_targetman, #2
+          False_Nine = score_falsenine, #3
+          Mobile_9 = score_mobile9, #4
+          Pressing_9 = score_pressing9, #5
+          Complete_Forward = score_completeforward #6
+        )
+        names(scores)[which.max(scores)] #<- and this will determine what grade is the best option based on which score is the highest
+      },
+      sPosition == "AM" ~ {
+        scores <- c(
+          CAM = score_cam,
+          Support_Striker = score_support_striker,
+          Playmaker = score_playmaker,
+          Complete_AM = score_complete_am
+        )
+        names(scores)[which.max(scores)]
+      },
+      sPosition == "WM" ~ {
+        scores <- c(
+          Traditional_WM = score_traditionalwm,
+          Wing_Back = score_wingback,
+          Playmaking_Wing = score_playmakingwing,
+          Inverted_WM = score_invertedwm,
+          Inside_Forward = score_insideforward,
+          Wide_Target_Man = score_widetargetman,
+          Complete_WM = score_complete_wm
+        )
+        names(scores)[which.max(scores)]
+      },
+      sPosition == "CM" ~ {
+        scores <- c(
+          CDM = score_cdm,
+          Regista = score_regista,
+          Box_to_Box = score_box2box,
+          Complete_CM = score_complete_cm
+        )
+        names(scores)[which.max(scores)]
+      },
+      sPosition == "FB" ~ {
+        scores <- c(
+          Traditional_FB = score_traditionalfb,
+          Inverted_FB = score_invertedfb,
+          Complete_FB = score_complete_fb
+        )
+        names(scores)[which.max(scores)]
+      },
+      sPosition == "CB" ~ {
+        scores <- c(
+          Stopper = score_stopper,
+          Ball_Playing_CB = score_ballplayingcb,
+          Sweeper = score_sweeper,
+          Complete_CB = score_complete_cb
+        )
+        names(scores)[which.max(scores)]
+      },
+      TRUE ~ "Unknown"
+    )
+  ) %>%
+  ungroup()
+
+# ---------------------------
+# View results
+archetype_summary <- data %>%
+  select(player, sPosition, Archetype, Player_Rating_FIFA) %>%
+  arrange(sPosition, player)
