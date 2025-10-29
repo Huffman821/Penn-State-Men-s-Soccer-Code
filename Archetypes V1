@@ -10,8 +10,27 @@ percentile_safe <- function(x) {
   dplyr::percent_rank(x)
 }
 
-data <- data %>% 
-  mutate(crosses_total_per90 = crosses_total / minutes_played * 90)
+data <- data %>%
+  mutate(
+    goals_per90 = goals / minutes_played * 90,
+    xg_per90 = xg / minutes_played * 90,
+    shots_on_target_per90 = shots_on_target / minutes_played * 90,
+    shots_total_per90 = shots_total / minutes_played * 90,
+    touches_in_penalty_area_per90 = touches_in_penalty_area / minutes_played * 90,
+    dribbles_successful_per90 = dribbles_successful / minutes_played * 90,
+    key_passes_per90 = key_passes / minutes_played * 90,
+    xa_per90 = xa / minutes_played * 90,
+    progressive_passes_accurate_per90 = progressive_passes_accurate / minutes_played * 90,
+    passes_final_third_accurate_per90 = passes_final_third_accurate / minutes_played * 90,
+    duels_won_per90 = duels_won / minutes_played * 90,
+    defensive_duels_won_per90 = defensive_duels_won / minutes_played * 90,
+    recoveries_opponent_half_per90 = recoveries_opponent_half / minutes_played * 90,
+    interceptions_per90 = interceptions / minutes_played * 90,
+    aerial_duels_won_per90 = aerial_duels_won / minutes_played * 90,
+    clearances_per90 = clearances / minutes_played * 90,
+    crosses_total_per90 = crosses_total / minutes_played * 90
+  )
+
 
 # Compute percentiles per sPosition using per90 stats
 data <- data %>%
