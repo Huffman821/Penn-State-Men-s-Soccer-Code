@@ -1,0 +1,184 @@
+# ------------------------------------------------------------------------------
+# Load necessary packages
+# ------------------------------------------------------------------------------
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(stringr)
+
+# ------------------------------------------------------------------------------
+# Load data
+# ------------------------------------------------------------------------------
+data <- read_csv("~/Downloads/player_totals.csv")
+
+# cosine similarity helper
+cosine_sim <- function(a, b) {
+  sum(a * b) / (sqrt(sum(a * a)) * sqrt(sum(b * b)))
+}
+
+# ------------------------------------------------------------------------------
+# per90 numbers
+# ------------------------------------------------------------------------------
+data <- data %>%
+  mutate(
+    goals_per90 = goals / minutes_played * 90,
+    xg_per90 = xg / minutes_played * 90,
+    shots_on_target_per90 = shots_on_target / minutes_played * 90,
+    shots_total_per90 = shots_total / minutes_played * 90,
+    assists_per90 = assists / minutes_played * 90,
+    xa_per90 = xa / minutes_played * 90,
+    touches_in_penalty_area_per90 = touches_in_penalty_area / minutes_played * 90,
+    dribbles_successful_per90 = dribbles_successful / minutes_played * 90,
+    key_passes_per90 = key_passes / minutes_played * 90,
+    progressive_passes_accurate_per90 = progressive_passes_accurate / minutes_played * 90,
+    passes_final_third_accurate_per90 = passes_final_third_accurate / minutes_played * 90,
+    duels_won_per90 = duels_won / minutes_played * 90,
+    defensive_duels_won_per90 = defensive_duels_won / minutes_played * 90,
+    recoveries_opponent_half_per90 = recoveries_opponent_half / minutes_played * 90,
+    interceptions_per90 = interceptions / minutes_played * 90,
+    aerial_duels_won_per90 = aerial_duels_won / minutes_played * 90,
+    clearances_per90 = clearances / minutes_played * 90,
+    crosses_total_per90 = crosses_total / minutes_played * 90, 
+    passes_total_per90 = passes_total / minutes_played * 90,
+    progressive_passes_total_per90 = progressive_passes_total / minutes_played * 90,
+    forward_passes_total_per90 = forward_passes_total / minutes_played * 90,
+    dribbles_total_per90 = dribbles_total / minutes_played * 90,
+    recoveries_total_per90 = recoveries_total / minutes_played * 90,
+    duels_total_per90 = duels_total / minutes_played * 90
+
+  )
+
+# Main function
+# data: your dataframe (the one you pasted)
+# players: character vector of player names (must match data$player)
+# stat_cols: which per90 stats to project (default: common attacking/creation/possession/defense)
+# alpha: weight on complementarity (positive increases output for complementary players)
+# beta: weight on similarity penalty (positive reduces output when players are similar)
+# clamp: min/max multiplier to avoid runaway numbers
+project_lineup <- function(data,
+                           players,
+                           stat_cols = c(
+                             "goals_per90", "xg_per90", "shots_on_target_per90", "shots_total_per90",
+                             "xa_per90", "assists_per90", 
+                             "touches_in_penalty_area_per90", "dribbles_successful_per90",
+                             "key_passes_per90", "progressive_passes_accurate_per90",
+                             "passes_final_third_accurate_per90", "duels_won_per90",
+                             "defensive_duels_won_per90", "recoveries_opponent_half_per90",
+                             "interceptions_per90", "aerial_duels_won_per90",
+                             "clearances_per90", "crosses_total_per90"), 
+                           feat_cols = c(
+                             "passes_total_per90","progressive_passes_total_per90",
+                                         "forward_passes_total_per90","xg_per90","xa_per90",
+                                         "dribbles_total_per90","recoveries_total_per90",
+                                         "duels_total_per90"),
+                           alpha = 0.18,
+                           beta  = 0.10,
+                           min_mult = 0.80,
+                           max_mult = 1.20) {
+
+  # check players exist
+  missing <- setdiff(players, data$player)
+  if(length(missing) > 0) stop("These players not found in data$player: ", paste(missing, collapse = ", "))
+
+  # subset player rows
+  p_data <- data %>% filter(player %in% players)
+
+  # baseline additive projection (sum of per90s)
+  baseline <- p_data %>% select(all_of(stat_cols)) %>% summarise(across(everything(), sum, na.rm = TRUE))
+
+  # build normalized feature vectors for compatibility calculation
+  feats <- p_data %>% select(all_of(feat_cols))
+  # If any selected feat missing in data, drop and warn
+  missing_feats <- setdiff(feat_cols, colnames(p_data))
+  if(length(missing_feats) > 0) {
+    warning("Dropping missing feat_cols: ", paste(missing_feats, collapse = ", "))
+    feats <- p_data %>% select(all_of(intersect(feat_cols, colnames(p_data))))
+  }
+  # replace NA with 0
+  feats[is.na(feats)] <- 0
+
+  # z-score normalize each column so scale differences don't dominate
+  feats_norm <- as.data.frame(scale(feats))
+
+  n <- nrow(feats_norm)
+  if(n == 0) stop("No feature columns available for compatibility calculation.")
+
+  # pairwise cosine similarities and pairwise complementarity (mean absolute diff)
+  sims <- c()
+  comps <- c()
+  if(n == 1) {
+    # single player -> neutral synergy
+    mean_sim <- 0
+    mean_comp <- 0
+  } else {
+    for(i in 1:(n-1)) {
+      for(j in (i+1):n) {
+        a <- as.numeric(feats_norm[i,])
+        b <- as.numeric(feats_norm[j,])
+        s <- cosine_sim(a,b)
+        sims <- c(sims, s)
+        # complementarity: mean absolute difference across features (normalized)
+        comps <- c(comps, mean(abs(a - b)))
+      }
+    }
+    mean_sim  <- mean(sims, na.rm = TRUE)    # between -1 and 1, but with z-scoring typically 0..1
+    mean_comp <- mean(comps, na.rm = TRUE)   # >= 0
+  }
+
+  # Because complementarity was computed on z-scored features, scale it roughly to similar range as similarity.
+  # Compute synergy multiplier
+  synergy_raw <- 1 + alpha * mean_comp - beta * mean_sim
+  synergy <- pmin(pmax(synergy_raw, min_mult), max_mult)
+
+  # apply multiplier to baseline
+  projected <- baseline * synergy
+
+  # also produce per-player adjusted numbers (scaled by same synergy but keeping share)
+  per_player_share <- p_data %>% select(player, all_of(stat_cols)) %>%
+    mutate(across(all_of(stat_cols), ~ .x / sum(.x, na.rm = TRUE), .names = "share_{col}"))
+  # if a stat sum is zero (e.g. no goals), avoid NaN and split equally
+  for(col in stat_cols) {
+    total <- sum(p_data[[col]], na.rm = TRUE)
+    share_name <- paste0("share_", col)
+    if(total == 0) {
+      per_player_share[[share_name]] <- 1 / n
+    } else {
+      per_player_share[[share_name]] <- per_player_share[[share_name]]
+    }
+  }
+  # compute per-player projected stats
+  per_player_proj <- per_player_share %>%
+    select(player, starts_with("share_")) %>%
+    pivot_longer(cols = starts_with("share_"),
+                 names_to = "stat",
+                 values_to = "share") %>%
+    mutate(stat = str_remove(stat, "^share_")) %>%
+    left_join(
+      pivot_longer(as.data.frame(projected), cols = everything(), names_to = "stat", values_to = "team_proj"),
+      by = "stat"
+    ) %>%
+    mutate(projected = share * team_proj) %>%
+    select(player, stat, projected) %>%
+    pivot_wider(names_from = stat, values_from = projected)
+
+  list(
+    lineup = players,
+    n_players = n,
+    mean_similarity = mean_sim,
+    mean_complementarity = mean_comp,
+    synergy_multiplier = synergy,
+    baseline_team_per90 = baseline,
+    projected_team_per90 = projected,
+    per_player_projected_per90 = per_player_proj
+  )
+}
+
+
+#To make an example
+# Example Lineup
+res <- project_lineup(data, players = c("B. Liscum", "J. Sheridan", "M. Marshall", "M. Henderson", 
+                                         "M. Daouda", "F. Bell", "C. Grabfelder", 
+                                         "B. Nash", "B. Madore", "K. Phillip"))
+
+# view team projection (per90)
+resx <- res$projected_team_per90
