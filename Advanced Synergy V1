@@ -1,0 +1,113 @@
+# ---- Soccer Player Synergy: Advanced Analytics Model ----
+
+library(dplyr)
+library(readr)
+library(tidyr)
+library(purrr)
+library(stringr)
+
+# ---- Load & Prepare Data ----
+data <- read_csv("~/Downloads/player_totals.csv")
+
+data <- data %>%
+  mutate(
+    goals_per90 = goals / minutes_played * 90,
+    xg_per90 = xg / minutes_played * 90,
+    shots_total_per90 = shots_total / minutes_played * 90,
+    xa_per90 = xa / minutes_played * 90,
+    progressive_passes_accurate_per90 = progressive_passes_accurate / minutes_played * 90,
+    passes_final_third_accurate_per90 = passes_final_third_accurate / minutes_played * 90,
+    dribbles_successful_per90 = dribbles_successful / minutes_played * 90,
+    recoveries_opponent_half_per90 = recoveries_opponent_half / minutes_played * 90,
+    duels_won_per90 = duels_won / minutes_played * 90
+  )
+
+# ---- Cosine Similarity Helper ----
+cosine_sim <- function(a, b) {
+  denom <- sqrt(sum(a*a)) * sqrt(sum(b*b))
+  if(denom == 0) return(0)
+  sum(a * b) / denom
+}
+
+# ---- Advanced Projection Function ----
+project_lineup_with_minutes_v2 <- function(data,
+                                          minutes_named,
+                                          stat_cols = c("goals_per90","xg_per90","shots_total_per90","xa_per90"),
+                                          feat_cols = c("progressive_passes_accurate_per90","passes_final_third_accurate_per90",
+                                                        "xg_per90","xa_per90","dribbles_successful_per90",
+                                                        "recoveries_opponent_half_per90","duels_won_per90"),
+                                          output_shrink = c("goals_per90","xg_per90","shots_total_per90"),
+                                          alpha = 0.18,    
+                                          beta  = 0.10,    
+                                          min_mult = 0.80,
+                                          max_mult = 1.20,
+                                          league_prior = NULL,
+                                          tau = 20) {
+
+  players <- names(minutes_named)
+  p_data <- data %>% dplyr::filter(player %in% players) %>%
+    mutate(minutes_expected = minutes_named[player])
+
+  # Convert to per-minute stats
+  p_data <- p_data %>% mutate(across(all_of(stat_cols), ~ .x / 90, .names = "pm_{col}"))
+
+  # Minutes-weighted totals
+  contrib <- p_data %>%
+    select(player, minutes_expected, starts_with("pm_")) %>%
+    mutate(across(starts_with("pm_"), ~ .x * minutes_expected))
+
+  team_totals_minutes <- contrib %>% summarise(across(starts_with("pm_"), sum, na.rm = TRUE))
+  team_per90_equiv <- as.numeric(team_totals_minutes) / 90
+  names(team_per90_equiv) <- sub("^pm_", "", names(team_totals_minutes))
+  team_per90_equiv <- team_per90_equiv[stat_cols]
+
+  # Compute feature similarity & complementarity
+  pm_matrix <- as.matrix(p_data %>% select(all_of(feat_cols)))
+  pm_matrix_scaled <- scale(pm_matrix)
+  pm_matrix_scaled[is.na(pm_matrix_scaled)] <- 0
+
+  n <- nrow(pm_matrix_scaled)
+  sims <- comps <- c()
+  for(i in 1:(n-1)) for(j in (i+1):n) {
+    a <- pm_matrix_scaled[i,]; b <- pm_matrix_scaled[j,]
+    sims <- c(sims, cosine_sim(a,b))
+    comps <- c(comps, mean(abs(a - b)))
+  }
+  mean_sim <- mean(sims, na.rm = TRUE)
+  mean_comp <- mean(comps, na.rm = TRUE)
+
+  # Compute synergy multiplier
+  synergy_raw <- 1 + alpha * mean_comp - beta * mean_sim
+  synergy <- pmin(pmax(synergy_raw, min_mult), max_mult)
+
+  team_projected_per90 <- team_per90_equiv * synergy
+
+  if(is.null(league_prior)) league_prior <- c(xg_per90 = 1.1, goals_per90 = 1.2, shots_total_per90 = 12)
+  lp <- league_prior[output_shrink]
+  obs <- team_projected_per90[output_shrink]
+  data_weight <- sum(minutes_named) / 90
+  shrunk <- (data_weight * obs + tau * lp) / (data_weight + tau)
+  team_projected_per90[output_shrink] <- shrunk
+
+  list(
+    synergy_mult = synergy,
+    mean_similarity = mean_sim,
+    mean_complementarity = mean_comp,
+    team_projected_per90 = team_projected_per90
+  )
+}
+
+# ---- Example Usage ----
+minutes_vec <- c(
+  "B. Liscum" = 90, "J. Sheridan" = 90, "M. Marshall" = 90, "M. Henderson" = 90,
+  "M. Daouda" = 90, "F. Bell" = 90, "C. Grabfelder" = 90, "B. Nash" = 90,
+  "B. Madore" = 90, "K. Phillip" = 90
+)
+
+adv_res <- project_lineup_with_minutes_v2(data, minutes_vec)
+
+print("Synergy Multiplier:")
+print(adv_res$synergy_mult)
+
+print("Projected Team per90 Stats:")
+print(adv_res$team_projected_per90)
