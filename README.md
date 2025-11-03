@@ -1,4 +1,4 @@
-Soccer Player Grading (raw and per90) + Archetype Allignment
+Soccer Player Grading (raw and per90) + Archetype Allignment + Synergy
 
 Description: 
 
