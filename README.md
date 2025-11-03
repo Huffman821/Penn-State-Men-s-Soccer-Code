@@ -19,3 +19,7 @@ Per90 metrics normalize performance to a full match (90 minutes), allowing fair 
 Player Archetypes
 
 Archetypes classify players into position-specific tactical roles based on their statistical strengths. They describe how a player typically operates on the pitch - for example, a striker could be a Poacher (goal-focused) or a Mobile 9 (pace-based transitional attacker), while a central midfielder could be a Box-to-Box or Regista type player, reflecting their defensive and creative balance. Archetypes provide a quick understanding of a player’s style and role beyond raw numbers. These archetypes are found and assigned using the player's Per90 stats as opposed to their raw total stats. 
+
+Player Synergy
+
+Synergy is used to make lineup predictions using past game data. This model will give a fairly accurate estimate of how n players play together if they were to play on the field at the same time for a full 90 minutes. You can make a complete 11 man lineup, or you can just put two players. The synergy_mult (right now is a random number ranging from 0.9 - 1.1) will be a multiplier that wil either benefit or harm predicted numbers based on the amount of actual time players spent on the field together. For example, if Liscum and Sheridan play togther often, their synergy would be high, resulting in better estimated numbers. Eventually, when we get game data for other teams, we will be able to adjust these predictions accordingly based on how the opposing teams play. 
