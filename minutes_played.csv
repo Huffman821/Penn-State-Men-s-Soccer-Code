@@ -157,3 +157,104 @@ Rutgers,B. Nash,39,46,90,98,sub in/out/in
 Rutgers,D. Leavey,39,46,51,98,sub in/out
 Rutgers,V. Danielson,0,46,51,59,sub in/out 
 Rutgers,M. Rumley,89,98,51,98,sub in
+
+Stetson,J. Evans,0,49,51,98,full game
+Stetson,S. Ovesen,0,49,51,98,sub out 84
+Stetson,B. Liscum,0,49,51,98,full game
+Stetson,M. Rumley,0,49,51,98,full game
+Stetson,M. Henderson,0,49,51,98,sub out 88
+Stetson,M. Marshall,0,49,51,98,sub out 88
+Stetson,M. Daouda,0,36,46,84,sub out/in/out
+Stetson,F. Bell,0,36,46,84,sub out/in/out
+Stetson,C. Grabfelder,0,49,51,98,sub out 88
+Stetson,J. Runge,0,36,46,87,sub out/in/out
+Stetson,K. Phillip,0,36,46,88,sub out/in/out
+Stetson,D. Leavey,36,46,84,98,sub in/out/in
+Stetson,B. Madore,36,46,88,98,sub in/out/in
+Stetson,V. Danielson,36,46,88,98,sub in/out/in
+Stetson,M. Eger,0,49,84,98,sub in
+Stetson,B. Nash,0,49,87,98,sub in
+Stetson,C. Clair,0,49,88,98,sub in
+
+Washington,J. Evans,0,55,55,100,full game
+Washington,M. Marshall,0,55,55,100,sub out 84
+Washington,J. Sheridan,0,55,55,100,full game
+Washington,B. Liscum,0,42,84,100,sub out/in
+Washington,M. Henderson,0,42,84,100,sub out/in
+Washington,D. Leavey,0,6,10,38,sub out/in/out/in/out/in
+Washington,M. Daouda,0,55,55,100,full game
+Washington,F. Bell,0,55,55,100,sub out 77
+Washington,B. Nash,0,38,46,63,sub out/in/out
+Washington,C. Grabfelder,0,55,55,100,full game
+Washington,C. Dionne,0,38,46,100,sub out/in
+Washington,B. Madore,6,10,38,100,sub in/out/in
+Washington,V. Danielson,38,46,77,100,sub in/out/in
+Washington,K. Phillip,38,42,43,46,77,100,sub in/out/in/out/in
+Washington,M. Rumley,42,100,55,100,sub in
+Washington,M. Eger,42,43,55,100,sub in/out
+
+Mercyhurst,J. Evans,0,30,79,100,sub out/in
+Mercyhurst,D. Leavey,0,30,79,100,sub out/in
+Mercyhurst,J. Sheridan,0,79,55,100,sub out 79
+Mercyhurst,B. Liscum,0,55,55,100,full game
+Mercyhurst,M. Marshall,0,71,55,100,sub out 71
+Mercyhurst,M. Daouda,0,85,55,100,sub out 85
+Mercyhurst,F. Bell,0,79,55,100,sub out 79
+Mercyhurst,M. Henderson,0,79,55,100,sub out 79
+Mercyhurst,B. Madore,0,30,71,100,sub out/in
+Mercyhurst,K. Phillip,0,85,55,100,sub out 85
+Mercyhurst,C. Grabfelder,0,85,55,100,sub out 85
+Mercyhurst,S. Ovesen,30,55,55,100,sub in
+Mercyhurst,V. Danielson,30,46,85,100,sub in/out/in
+Mercyhurst,C. Dionne,46,71,55,100,sub in/out
+Mercyhurst,S. De la Cruz,71,100,55,100,sub in
+Mercyhurst,M. Rumley,79,100,55,100,sub in
+Mercyhurst,M. Eger,79,100,55,100,sub in
+Mercyhurst,C. Clair,85,100,55,100,sub in
+Mercyhurst,C. Brady,85,100,55,100,sub in
+
+Syracuse,J. Evans,0,36,58,99,sub out/in
+Syracuse,S. Ovesen,0,36,58,99,sub out/in
+Syracuse,J. Sheridan,0,36,58,99,sub out/in
+Syracuse,B. Liscum,0,36,58,99,sub out/in
+Syracuse,M. Henderson,0,36,58,99,sub out/in
+Syracuse,M. Marshall,0,36,58,99,sub out/in
+Syracuse,M. Daouda,0,32,46,84,sub out/in/out
+Syracuse,F. Bell,0,32,46,84,sub out/in/out
+Syracuse,D. Leavey,0,32,46,84,sub out/in/out
+Syracuse,B. Madore,0,36,64,99,sub out/in
+Syracuse,K. Phillip,32,46,84,99,sub in/out/in
+Syracuse,B. Nash,32,46,84,99,sub in/out/in
+Syracuse,V. Danielson,36,64,55,99,sub in/out
+Syracuse,C. Clair,36,58,55,99,sub in/out
+
+UCLA,J. Evans,0,46,46,97,full game
+UCLA,M. Marshall,0,46,46,97,sub out 80
+UCLA,J. Sheridan,0,46,46,97,full game
+UCLA,B. Liscum,0,46,46,97,full game
+UCLA,M. Henderson,0,46,46,97,sub out 80
+UCLA,F. Bell,0,46,46,97,sub out 80
+UCLA,C. Grabfelder,0,41,80,97,sub out/in
+UCLA,M. Daouda,0,41,80,97,sub out/in
+UCLA,B. Madore,0,41,80,97,sub out/in
+UCLA,B. Nash,0,29,93,97,sub out/in
+UCLA,C. Dionne,0,29,70,97,sub out/in
+UCLA,D. Leavey,29,93,46,97,sub in/out
+UCLA,K. Phillip,29,80,46,97,sub in/out
+UCLA,S. Ovesen,41,70,46,97,sub in/out
+UCLA,V. Danielson,80,97,46,97,sub in
+
+Wisconsin,J. Evans,0,48,48,96,full game
+Wisconsin,M. Marshall,0,48,48,96,full game
+Wisconsin,J. Sheridan,0,48,48,96,full game
+Wisconsin,B. Liscum,0,48,48,96,sub out 39
+Wisconsin,M. Rumley,0,48,48,96,sub out 39
+Wisconsin,D. Leavey,0,66,48,96,sub out 66
+Wisconsin,M. Daouda,0,30,46,96,sub out/in
+Wisconsin,C. Grabfelder,0,30,46,96,sub out/in
+Wisconsin,B. Madore,0,30,46,96,sub out/in
+Wisconsin,M. Henderson,0,30,46,96,sub out/in
+Wisconsin,V. Danielson,0,30,46,96,sub out/in
+Wisconsin,M. Eger,30,46,66,96,sub in/out/in
+Wisconsin,B. Nash,39,66,48,96,sub in/out
+Wisconsin,S. Ovesen,66,96,48,96,sub in
