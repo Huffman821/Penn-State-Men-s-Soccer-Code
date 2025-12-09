@@ -16,7 +16,6 @@ Army,J. Sheridan,46,51,51,100,sub in 46
 Army,M. Eger,60,79,51,100,sub in/out
 Army,B. Nash,77,51,51,100,sub in 77
 Army,D. Leavey,79,51,51,100,sub in 79
-
 Michigan State,J. Evans,0,51,51,96,full game
 Michigan State,M. Marshall,0,51,51,96,full game
 Michigan State,J. Sheridan,0,51,51,96,full game
@@ -31,7 +30,6 @@ Michigan State,K. Phillip,0,25,46,75,sub out/in
 Michigan State,B. Nash,25,51,51,96,sub in
 Michigan State,B. Madore,25,51,51,92,sub in/out
 Michigan State,V. Danielson,40,46,51,96,sub in/out
-
 Ohio State,J. Evans,0,51,51,94,full game
 Ohio State,M. Eger,0,85,51,94,sub out 85
 Ohio State,J. Sheridan,0,51,51,94,full game
@@ -45,7 +43,6 @@ Ohio State,V. Danielson,0,44,46,94,sub out/in
 Ohio State,B. Madore,0,37,46,94,sub out/in
 Ohio State,D. Leavey,37,46,85,94,sub in/out
 Ohio State,S. Ovesen,44,46,51,94,sub in/out
-
 Indiana,J. Evans,0,51,51,100,full game
 Indiana,S. Ovesen,0,85,51,100,sub out 85
 Indiana,B. Liscum,0,51,51,100,full game
@@ -62,7 +59,6 @@ Indiana,D. Leavey,40,46,85,100,sub in/out/in
 Indiana,V. Danielson,40,46,85,100,sub in/out/in
 Indiana,B. Nash,46,59,51,100,sub in/out
 Indiana,J. Runge,46,67,51,100,sub in/out
-
 Maryland,J. Evans,0,51,51,113,full game
 Maryland,M. Marshall,0,51,51,113,full game
 Maryland,J. Sheridan,0,51,51,113,full game
@@ -77,7 +73,6 @@ Maryland,C. Dionne,0,34,66,113,sub out/in
 Maryland,B. Madore,34,51,82,113,sub in/out
 Maryland,D. Leavey,38,51,91,113,sub in/out
 Maryland,V. Danielson,38,46,91,113,sub in/out
-
 Michigan,J. Evans,0,51,51,104,full game
 Michigan,M. Eger,0,51,51,104,sub out 84
 Michigan,J. Sheridan,0,51,51,104,full game
@@ -91,7 +86,6 @@ Michigan,C. Grabfelder,0,38,46,104,sub out/in
 Michigan,V. Danielson,0,28,83,104,sub out/in
 Michigan,B. Madore,28,46,84,104,sub in/out/in
 Michigan,C. Dionne,38,83,51,104,sub in/out
-
 Missouri State,F. Grundin,0,49,51,100,full game
 Missouri State,S. Ovesen,0,49,51,100,full game
 Missouri State,J. Sheridan,0,39,46,87,sub out/in/out
@@ -108,7 +102,6 @@ Missouri State,V. Danielson,38,63,51,100,sub in/out
 Missouri State,M. Rumley,39,46,87,100,sub in/out/in
 Missouri State,C. Clair,39,46,51,100,sub in/out
 Missouri State,M. Eger,46,63,51,100,sub in/out
-
 Northwestern,J. Evans,0,45,51,100,full game
 Northwestern,M. Marshall,0,36,46,100,sub out/in/out
 Northwestern,J. Sheridan,0,45,51,100,full game
@@ -123,7 +116,6 @@ Northwestern,C. Dionne,0,36,68,100,sub out/in
 Northwestern,B. Nash,36,46,81,100,sub in/out/in
 Northwestern,V. Danielson,36,46,95,100,sub in/out/in
 Northwestern,K. Phillip,40,81,51,100,sub in/out
-
 Robert Morris,J. Evans,0,54,54,98,full game
 Robert Morris,M. Marshall,0,54,54,98,sub out 86
 Robert Morris,J. Sheridan,0,54,54,98,full game
@@ -140,7 +132,6 @@ Robert Morris,C. Dionne,32,46,64,86,sub in/out/in/out
 Robert Morris,M. Rumley,86,98,54,98,sub in
 Robert Morris,M. Eger,86,98,54,98,sub in
 Robert Morris,S. De la Cruz,86,98,54,98,sub in
-
 Rutgers,J. Evans,0,47,51,98,red card 81
 Rutgers,S. Ovesen,0,47,51,98,full game
 Rutgers,J. Sheridan,0,47,51,98,red card 81
@@ -155,9 +146,8 @@ Rutgers,K. Phillip,0,39,59,98,sub out/in
 Rutgers,C. Dionne,34,46,69,98,sub in/out/in
 Rutgers,B. Nash,39,46,90,98,sub in/out/in
 Rutgers,D. Leavey,39,46,51,98,sub in/out
-Rutgers,V. Danielson,0,46,51,59,sub in/out 
+Rutgers,V. Danielson,0,46,51,59,sub in/out
 Rutgers,M. Rumley,89,98,51,98,sub in
-
 Stetson,J. Evans,0,49,51,98,full game
 Stetson,S. Ovesen,0,49,51,98,sub out 84
 Stetson,B. Liscum,0,49,51,98,full game
@@ -175,7 +165,6 @@ Stetson,V. Danielson,36,46,88,98,sub in/out/in
 Stetson,M. Eger,0,49,84,98,sub in
 Stetson,B. Nash,0,49,87,98,sub in
 Stetson,C. Clair,0,49,88,98,sub in
-
 Washington,J. Evans,0,55,55,100,full game
 Washington,M. Marshall,0,55,55,100,sub out 84
 Washington,J. Sheridan,0,55,55,100,full game
@@ -192,7 +181,6 @@ Washington,V. Danielson,38,46,77,100,sub in/out/in
 Washington,K. Phillip,38,42,43,46,77,100,sub in/out/in/out/in
 Washington,M. Rumley,42,100,55,100,sub in
 Washington,M. Eger,42,43,55,100,sub in/out
-
 Mercyhurst,J. Evans,0,30,79,100,sub out/in
 Mercyhurst,D. Leavey,0,30,79,100,sub out/in
 Mercyhurst,J. Sheridan,0,79,55,100,sub out 79
@@ -212,7 +200,6 @@ Mercyhurst,M. Rumley,79,100,55,100,sub in
 Mercyhurst,M. Eger,79,100,55,100,sub in
 Mercyhurst,C. Clair,85,100,55,100,sub in
 Mercyhurst,C. Brady,85,100,55,100,sub in
-
 Syracuse,J. Evans,0,36,58,99,sub out/in
 Syracuse,S. Ovesen,0,36,58,99,sub out/in
 Syracuse,J. Sheridan,0,36,58,99,sub out/in
@@ -227,7 +214,6 @@ Syracuse,K. Phillip,32,46,84,99,sub in/out/in
 Syracuse,B. Nash,32,46,84,99,sub in/out/in
 Syracuse,V. Danielson,36,64,55,99,sub in/out
 Syracuse,C. Clair,36,58,55,99,sub in/out
-
 UCLA,J. Evans,0,46,46,97,full game
 UCLA,M. Marshall,0,46,46,97,sub out 80
 UCLA,J. Sheridan,0,46,46,97,full game
@@ -258,3 +244,40 @@ Wisconsin,V. Danielson,0,30,46,96,sub out/in
 Wisconsin,M. Eger,30,46,66,96,sub in/out/in
 Wisconsin,B. Nash,39,66,48,96,sub in/out
 Wisconsin,S. Ovesen,66,96,48,96,sub in
+
+Mercyhurst,J. Evans,0,30,79,100,sub out/in
+Mercyhurst,D. Leavey,0,30,79,100,sub out/in
+Mercyhurst,J. Sheridan,0,79,55,100,sub out 79
+Mercyhurst,B. Liscum,0,55,55,100,full game
+Mercyhurst,M. Marshall,0,71,55,100,sub out 71
+Mercyhurst,M. Daouda,0,85,55,100,sub out 85
+Mercyhurst,F. Bell,0,79,55,100,sub out 79
+Mercyhurst,M. Henderson,0,79,55,100,sub out 79
+Mercyhurst,B. Madore,0,30,71,100,sub out/in
+Mercyhurst,K. Phillip,0,85,55,100,sub out 85
+Mercyhurst,C. Grabfelder,0,85,55,100,sub out 85
+Mercyhurst,S. Ovesen,30,55,55,100,sub in
+Mercyhurst,V. Danielson,30,46,85,100,sub in/out/in
+Mercyhurst,C. Dionne,46,71,55,100,sub in/out
+Mercyhurst,S. De la Cruz,71,100,55,100,sub in
+Mercyhurst,M. Rumley,79,100,55,100,sub in
+Mercyhurst,M. Eger,79,100,55,100,sub in
+Mercyhurst,C. Clair,85,100,55,100,sub in
+Mercyhurst,C. Brady,85,100,55,100,sub in
+
+Washington,J. Evans,0,55,55,100,full game
+Washington,M. Marshall,0,55,55,100,sub out 84
+Washington,J. Sheridan,0,55,55,100,full game
+Washington,B. Liscum,0,42,84,100,sub out/in
+Washington,M. Henderson,0,42,84,100,sub out/in
+Washington,D. Leavey,0,6,10,38,sub out/in/out/in/out/in
+Washington,M. Daouda,0,55,55,100,full game
+Washington,F. Bell,0,55,55,100,sub out 77
+Washington,B. Nash,0,38,46,63,sub out/in/out
+Washington,C. Grabfelder,0,55,55,100,full game
+Washington,C. Dionne,0,38,46,100,sub out/in
+Washington,B. Madore,6,10,38,100,sub in/out/in
+Washington,V. Danielson,38,46,77,100,sub in/out/in
+Washington,K. Phillip,38,42,43,46,77,100,sub in/out/in/out/in
+Washington,M. Rumley,42,100,55,100,sub in
+Washington,M. Eger,42,43,55,100,sub in/out
