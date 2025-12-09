@@ -62,3 +62,68 @@ Indiana,D. Leavey,40,46,85,100,sub in/out/in
 Indiana,V. Danielson,40,46,85,100,sub in/out/in
 Indiana,B. Nash,46,59,51,100,sub in/out
 Indiana,J. Runge,46,67,51,100,sub in/out
+
+match_id,player_name,half1_start,half1_end,half2_start,half2_end,notes
+Maryland,J. Evans,0,51,51,113,full game
+Maryland,M. Marshall,0,51,51,113,full game
+Maryland,J. Sheridan,0,51,51,113,full game
+Maryland,B. Liscum,0,51,51,113,full game
+Maryland,M. Henderson,0,51,51,113,full game
+Maryland,C. Grabfelder,0,51,51,113,full game
+Maryland,M. Daouda,0,51,51,113,full game
+Maryland,F. Bell,0,51,51,113,full game
+Maryland,B. Nash,0,38,82,113,sub out/in
+Maryland,K. Phillip,0,38,46,66,sub out/in/out
+Maryland,C. Dionne,0,34,66,113,sub out/in
+Maryland,B. Madore,34,51,82,113,sub in/out
+Maryland,D. Leavey,38,51,91,113,sub in/out
+Maryland,V. Danielson,38,46,91,113,sub in/out
+
+match_id,player_name,half1_start,half1_end,half2_start,half2_end,notes
+Michigan,J. Evans,0,51,51,104,full game
+Michigan,M. Eger,0,51,51,104,sub out 84
+Michigan,J. Sheridan,0,51,51,104,full game
+Michigan,B. Liscum,0,51,51,104,full game
+Michigan,M. Marshall,0,51,51,104,full game
+Michigan,D. Leavey,0,84,51,104,sub out 84
+Michigan,M. Daouda,0,51,51,104,full game
+Michigan,F. Bell,0,38,46,104,sub out/in
+Michigan,M. Henderson,0,38,46,104,sub out/in
+Michigan,C. Grabfelder,0,38,46,104,sub out/in
+Michigan,V. Danielson,0,28,83,104,sub out/in
+Michigan,B. Madore,28,46,84,104,sub in/out/in
+Michigan,C. Dionne,38,83,51,104,sub in/out
+
+match_id,player_name,half1_start,half1_end,half2_start,half2_end,notes
+Missouri State,F. Grundin,0,49,51,100,full game
+Missouri State,S. Ovesen,0,49,51,100,full game
+Missouri State,J. Sheridan,0,39,46,87,sub out/in/out
+Missouri State,B. Liscum,0,39,46,87,sub out/in/out
+Missouri State,M. Henderson,0,49,51,100,full game
+Missouri State,M. Marshall,0,39,46,87,sub out/in/out
+Missouri State,M. Daouda,0,46,63,100,sub out/in
+Missouri State,F. Bell,0,46,63,100,sub out/in
+Missouri State,D. Leavey,0,25,46,100,sub out/in
+Missouri State,B. Madore,0,39,46,100,sub out/in
+Missouri State,K. Phillip,0,38,63,100,sub out/in
+Missouri State,C. Grabfelder,25,51,51,100,sub in
+Missouri State,V. Danielson,38,63,51,100,sub in/out
+Missouri State,M. Rumley,39,46,87,100,sub in/out/in
+Missouri State,C. Clair,39,46,51,100,sub in/out
+Missouri State,M. Eger,46,63,51,100,sub in/out
+
+match_id,player_name,half1_start,half1_end,half2_start,half2_end,notes
+Northwestern,J. Evans,0,45,51,100,full game
+Northwestern,M. Marshall,0,36,46,100,sub out/in/out
+Northwestern,J. Sheridan,0,45,51,100,full game
+Northwestern,B. Liscum,0,45,51,100,full game
+Northwestern,M. Henderson,0,45,51,100,full game
+Northwestern,D. Leavey,0,36,46,68,sub out/in/out
+Northwestern,M. Daouda,0,51,51,100,sub out 95
+Northwestern,F. Bell,0,51,51,100,sub out 95
+Northwestern,B. Madore,0,40,46,100,sub out/in
+Northwestern,C. Grabfelder,0,45,51,100,full game
+Northwestern,C. Dionne,0,36,68,100,sub out/in
+Northwestern,B. Nash,36,46,81,100,sub in/out/in
+Northwestern,V. Danielson,36,46,95,100,sub in/out/in
+Northwestern,K. Phillip,40,81,51,100,sub in/out
