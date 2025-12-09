@@ -1,0 +1,33 @@
+match_id,player_name,half1_start,half1_end,half2_start,half2_end,notes
+Army,F. Grundin,0,51,51,100,full game
+Army,S. Ovesen,0,60,51,100,sub out 60
+Army,B. Liscum,0,46,51,100,sub out 46
+Army,M. Rumley,0,77,51,100,sub out 77
+Army,M. Henderson,0,51,51,100,full game
+Army,M. Marshall,0,51,51,100,full game
+Army,M. Daouda,0,51,51,100,full game
+Army,F. Bell,0,51,51,100,full game
+Army,C. Grabfelder,0,51,51,70,red card
+Army,J. Runge,0,18,51,100,sub out 18
+Army,K. Phillip,0,38,46,75,sub out/in
+Army,B. Madore,18,51,51,100,sub in 18
+Army,V. Danielson,38,46,51,100,sub in/out
+Army,J. Sheridan,46,51,51,100,sub in 46
+Army,M. Eger,60,79,51,100,sub in/out
+Army,B. Nash,77,51,51,100,sub in 77
+Army,D. Leavey,79,51,51,100,sub in 79
+
+Michigan State,J. Evans,0,51,51,96,full game
+Michigan State,M. Marshall,0,51,51,96,full game
+Michigan State,J. Sheridan,0,51,51,96,full game
+Michigan State,B. Liscum,0,51,51,96,full game
+Michigan State,M. Henderson,0,51,51,96,full game
+Michigan State,C. Grabfelder,0,51,51,96,full game
+Michigan State,M. Daouda,0,51,51,96,full game
+Michigan State,F. Bell,0,51,51,96,full game
+Michigan State,D. Leavey,0,25,51,96,sub out/in
+Michigan State,C. Dionne,0,40,51,96,sub out/in
+Michigan State,K. Phillip,0,25,46,75,sub out/in
+Michigan State,B. Nash,25,51,51,96,sub in
+Michigan State,B. Madore,25,51,51,92,sub in/out
+Michigan State,V. Danielson,40,46,51,96,sub in/out
