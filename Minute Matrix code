@@ -1,0 +1,57 @@
+library(dplyr)
+library(readr)
+library(tidyr)
+
+# Load CSV
+df <- read_csv("~/Downloads/minutes_played.csv")
+
+# Function to calculate minutes together for two players in one match
+minutes_together <- function(p1_start1, p1_end1, p1_start2, p1_end2,
+                             p2_start1, p2_end1, p2_start2, p2_end2) {
+  # First half overlap
+  first_half <- max(0, min(p1_end1, p2_end1) - max(p1_start1, p2_start1))
+  # Second half overlap
+  second_half <- max(0, min(p1_end2, p2_end2) - max(p1_start2, p2_start2))
+  first_half + second_half
+}
+
+# Get all unique players
+players <- unique(df$player_name)
+
+# Create all combinations of player pairs
+player_pairs <- combn(players, 2, simplify = FALSE)
+
+# Initialize results
+results <- list()
+
+# Loop through matches
+for(match in unique(df$match_id)) {
+  match_data <- df %>% filter(match_id == match)
+  
+  for(pair in player_pairs) {
+    p1 <- pair[1]
+    p2 <- pair[2]
+    
+    # Extract player rows
+    p1_data <- match_data %>% filter(player_name == p1)
+    p2_data <- match_data %>% filter(player_name == p2)
+    
+    # Make sure both players played in the match
+    if(nrow(p1_data) > 0 & nrow(p2_data) > 0) {
+      mt <- minutes_together(
+        p1_data$half1_start, p1_data$half1_end, p1_data$half2_start, p1_data$half2_end,
+        p2_data$half1_start, p2_data$half1_end, p2_data$half2_start, p2_data$half2_end
+      )
+      
+      results <- append(results, list(
+        tibble(match_id = match,
+               player1 = p1,
+               player2 = p2,
+               minutes_together = mt)
+      ))
+    }
+  }
+}
+
+# Combine all results into one dataframe
+minutes_df <- bind_rows(results)
